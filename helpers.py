@@ -1,9 +1,8 @@
 from datetime import datetime, timezone
 import fastf1 as f1
-import pandas as pd
 
 
-def get_params() -> tuple:
+def get_args() -> tuple:
     year = datetime.now().year  # using current year for now by default
     try:
         gp = int(input("Grand Prix week no. : "))
@@ -41,6 +40,7 @@ def last_complete_session(year: int, gp: int, event: str) -> tuple:
     elif year_schedule.iloc[gp-1][f"{session_num}Date"] > datetime.now(timezone.utc):
         # this session is in future, find last occured non-practice round
 
+        last_valid_session = 0  # might be redundant, but just for safety
         for S in range(1,int(session_num[-1])):
             if year_schedule.iloc[gp-1][f"Session{S}Date"] > datetime.now(timezone.utc):
                 last_valid_session = S - 1

@@ -16,7 +16,7 @@ def main() -> None:
     predictors = pred.columns[1:] # 1st col is Name/Position
     last = len(pred)
     pred.at[last, pred.columns[0]] = "Total"
-    total_drivers = results["Position"].iloc[-1]
+    total_drivers = len(results["Abbreviation"])# .iloc[-1] could be None
 
     for player in predictors:
         sum = 0

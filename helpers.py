@@ -48,7 +48,11 @@ def last_complete_session(year: int, gp: int, event: str) -> tuple:
             
         if last_valid_session == 0 or year_schedule.iloc[gp-1][f"Session{last_valid_session}"].startswith("Practice"):
             # go to latest complete week's latest event
-            return last_complete_session(year, remaining.iloc[0]["RoundNumber"], "Race")
+            rem = remaining.iloc[0]["RoundNumber"]
+            if rem == gp:
+                rem -= 1
+                
+            return last_complete_session(year, rem, "Race")
                     
         else:
             event = year_schedule.iloc[gp-1][f"Session{last_valid_session}"]

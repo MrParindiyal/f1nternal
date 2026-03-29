@@ -8,6 +8,7 @@ def main() -> None:
     session = f1.get_session(*last_session)
     session._load_drivers_results()
 
+    print(f"{session.name}, {session.event["Country"]} {session.date.year}")
     results = session.results[["Abbreviation", "Position"]]
     results_dict = {results.iloc[n].iloc[0] : n + 1 for n in range(len(results))}
     

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import fastf1 as f1
 
 
@@ -37,7 +37,7 @@ def last_complete_session(year: int, gp: int, event: str) -> tuple:
         round = year_schedule["RoundNumber"].iloc[-1]
         event = year_schedule.iloc[round]["Session5"]
 
-    elif year_schedule.iloc[gp-1][f"{session_num}Date"] > datetime.now(timezone.utc):
+    elif year_schedule.iloc[gp - 1][f"{session_num}Date"] > datetime.now(timezone.utc):
         # this session is in future, find last occured non-practice round
 
         last_valid_session = 0  # might be redundant, but just for safety
@@ -46,16 +46,19 @@ def last_complete_session(year: int, gp: int, event: str) -> tuple:
                 last_valid_session = S - 1
                 break
             
+        if last_valid_session > 0 and year_schedule.iloc[gp-1][f"Session{last_valid_session}Date"] + timedelta(hours=2) > datetime.now(timezone.utc):
+            last_valid_session -= 1 # session is started but not finished yet (or finished but API is stale) , fallback 
+            
         if last_valid_session == 0 or year_schedule.iloc[gp-1][f"Session{last_valid_session}"].startswith("Practice"):
             # go to latest complete week's latest event
             rem = remaining.iloc[0]["RoundNumber"]
             if rem == gp:
                 rem -= 1
-                
+
             return last_complete_session(year, rem, "Race")
-                    
+
         else:
-            event = year_schedule.iloc[gp-1][f"Session{last_valid_session}"]
+            event = year_schedule.iloc[gp - 1][f"Session{last_valid_session}"]
             round = gp
 
     else:
@@ -64,4 +67,3 @@ def last_complete_session(year: int, gp: int, event: str) -> tuple:
         round = gp
 
     return year, int(round), event
-
